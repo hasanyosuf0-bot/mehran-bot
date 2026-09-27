@@ -2,7 +2,7 @@ import os
 import telebot
 from telebot import types
 
-TOKEN = os.getenv('TOKEN', '8708625165:AAF63kNHGMeqNhdByOqEMGCwTA1q941_tAk')
+TOKEN = '8708625165:AAF63kNHGMeqNhdByOqEMGCwTA1q941_tAk'
 bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(commands=['start', 'help'])
@@ -17,7 +17,7 @@ def send_welcome(message):
     markup.add(btn1, btn2, btn3, btn4, btn5)
     
     welcome_message = (
-        f"Welcome {message.from_user.first_name} to Mehran Coding Bot (@mehran_coding_bot).\n\n"
+        f"Welcome {message.from_user.first_name} to Mehran Coding Bot (@mehran_coding_bot).\n"
         "Your automated assistant for programming, security, and digital services.\n"
         "Please choose a section from the menu below:"
     )
@@ -42,7 +42,7 @@ def handle_messages(message):
             "Cyber Security & Ethical Hacking:\n\n"
             "1. Penetration Testing & Vulnerability Assessment.\n"
             "2. Server & Database Hardening.\n"
-            "3. Information Security Consultations.\n\n"
+            "3. Information Security Consultations.\n"
             "Note: All services comply with ethical hacking standards."
         )
         bot.send_message(message.chat.id, res)
@@ -58,24 +58,24 @@ def handle_messages(message):
         
     elif txt == 'Social Media Ads':
         res = (
-            "Social Media & Advertising:\n\n"
-            "1. Paid ad campaigns management.\n"
-            "2. Growth strategies and engagement.\n"
-            "3. Digital marketing consultation."
+            "Social Media Advertising:\n\n"
+            "1. Targeted ad campaigns (Facebook, Instagram, TikTok).\n"
+            "2. Budget optimization & audience targeting.\n"
+            "3. Analytics & performance tracking."
         )
         bot.send_message(message.chat.id, res)
         
     elif txt == 'Technical Support':
         res = (
-            "Technical Support:\n\n"
-            "For direct contact and custom requests:\n"
-            "Developer: @hasanyosuf0-bot"
+            "Technical Support & Consultations:\n\n"
+            "1. 24/7 IT troubleshooting.\n"
+            "2. Server setup & cloud deployment.\n"
+            "3. Software architecture advice."
         )
         bot.send_message(message.chat.id, res)
         
     else:
-        bot.send_message(message.chat.id, "Invalid option. Please use the menu or type /start.")
+        bot.send_message(message.chat.id, "Please select an option from the keyboard menu below.")
 
 if __name__ == '__main__':
-    print("Bot is running successfully...")
     bot.infinity_polling()
