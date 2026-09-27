@@ -7,75 +7,71 @@ bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    btn1 = types.KeyboardButton('Programming Services')
-    btn2 = types.KeyboardButton('Cyber Security')
-    btn3 = types.KeyboardButton('Account Recovery')
-    btn4 = types.KeyboardButton('Social Media Ads')
-    btn5 = types.KeyboardButton('Technical Support')
-    
-    markup.add(btn1, btn2, btn3, btn4, btn5)
-    
     welcome_message = (
-        f"Welcome {message.from_user.first_name} to Mehran Coding Bot (@mehran_coding_bot).\n"
-        "Your automated assistant for programming, security, and digital services.\n"
-        "Please choose a section from the menu below:"
+        f"أهلاً بك يا {message.from_user.first_name} في بوت مهران للخدمات التقنية والرقمية.\n\n"
+        "أنا مساعدك الذكي المتكامل للبرمجة، الأمن السيبراني، استعادة الحسابات، الإعلانات، والدعم الفني.\n"
+        "يمكنك التحدث معي مباشرة وكتابة ما تبحث عنه، وسأقوم بمساعدتك فوراً!"
     )
-    bot.send_message(message.chat.id, welcome_message, reply_markup=markup)
+    bot.send_message(message.chat.id, welcome_message)
 
 @bot.message_handler(func=lambda message: True)
-def handle_messages(message):
-    txt = message.text
+def handle_ai_chat(message):
+    txt = message.text.lower()
     
-    if txt == 'Programming Services':
+    # تحليل رسالة المستخدم والرد عليها بشكل ذكي باللغة العربية
+    if 'برمجة' in txt or 'تطوير' in txt or 'موقع' in txt or 'تطبيق' in txt:
         res = (
-            "Programming & Development Services:\n\n"
-            "1. Web Development (Frontend & Backend).\n"
-            "2. Advanced Telegram Bots.\n"
-            "3. Mobile App Solutions.\n"
-            "4. Custom Python & JavaScript Scripts."
+            "خدمات البرمجة وتطوير البرمجيات:\n\n"
+            "1. تطوير مواقع الويب (الواجهة الأمامية والخلفية).\n"
+            "2. بناء روبوتات تيليجرام متقدمة.\n"
+            "3. حلول تطبيقات الهواتف الذكية.\n"
+            "4. كتابة نصوص برمجية مخصصة بلغة بايثون وجافا سكريبت.\n\n"
+            "هل ترغب في البدء بمشروع معين أو تحتاج استشارة برمجية؟ أخبرني بالتفاصيل."
         )
-        bot.send_message(message.chat.id, res)
-        
-    elif txt == 'Cyber Security':
+    elif 'أمان' in txt or 'حماية' in txt or 'اختراق' in txt or 'سيبراني' in txt:
         res = (
-            "Cyber Security & Ethical Hacking:\n\n"
-            "1. Penetration Testing & Vulnerability Assessment.\n"
-            "2. Server & Database Hardening.\n"
-            "3. Information Security Consultations.\n"
-            "Note: All services comply with ethical hacking standards."
+            "خدمات الأمن السيبراني والاختبار الأخلاقي:\n\n"
+            "1. اختبار الاختراق وتقييم الثغرات الأمنية.\n"
+            "2. تأمين وحماية الخوادم وقواعد البيانات.\n"
+            "3. استشارات أمن المعلومات.\n\n"
+            "ملاحظة: جميع الخدمات توافق معايير الاختراق الأخلاقي والقانوني.\n"
+            "كيف يمكنني تأمين نظامك أو مشروعك اليوم؟"
         )
-        bot.send_message(message.chat.id, res)
-        
-    elif txt == 'Account Recovery':
+    elif 'استعادة' in txt or 'حساب' in txt or 'تهكير' in txt or 'استرجاع' in txt:
         res = (
-            "Account Recovery Services:\n\n"
-            "1. Recover hacked or lost social media accounts.\n"
-            "2. Apply advanced security layers.\n"
-            "3. Restore banned or stolen channels."
+            "خدمات استعادة الحسابات:\n\n"
+            "1. استعادة حسابات وسائل التواصل الاجتماعي المخترقة أو المفقودة.\n"
+            "2. تطبيق طبقات حماية متقدمة لتأمين حساباتك.\n"
+            "3. استعادة القنوات المحظورة أو المسروقة.\n\n"
+            "ما هي منصة الحساب الذي ترغب في استعادته أو تأمينه؟"
         )
-        bot.send_message(message.chat.id, res)
-        
-    elif txt == 'Social Media Ads':
+    elif 'إعلان' in txt or 'تسويق' in txt or 'سوشيال ميديا' in txt:
         res = (
-            "Social Media Advertising:\n\n"
-            "1. Targeted ad campaigns (Facebook, Instagram, TikTok).\n"
-            "2. Budget optimization & audience targeting.\n"
-            "3. Analytics & performance tracking."
+            "خدمات الإعلانات والتسويق الرقمي:\n\n"
+            "1. حملات إعلانية مستهدفة (فيسبوك، إنستغرام، تيك توك).\n"
+            "2. تحسين الميزانية واستهداف الجمهور بدقة.\n"
+            "3. تحليلات وتتبع الأداء لزيادة المبيعات.\n\n"
+            "ما هو طبيعة نشاطك التجاري لكي نجهز لك الحملة المناسبة؟"
         )
-        bot.send_message(message.chat.id, res)
-        
-    elif txt == 'Technical Support':
+    elif 'دعم' in txt or 'مشكلة' in txt or 'مساعدة' in txt or 'استفسار' in txt:
         res = (
-            "Technical Support & Consultations:\n\n"
-            "1. 24/7 IT troubleshooting.\n"
-            "2. Server setup & cloud deployment.\n"
-            "3. Software architecture advice."
+            "خدمات الدعم الفني والاستشارات:\n\n"
+            "1. حل المشكلات التقنية على مدار الساعة.\n"
+            "2. إعداد الخوادم والنشر السحابي (Cloud Deployment).\n"
+            "3. استشارات هندسة البرمجيات.\n\n"
+            "اطرح مشكلتك أو استفسارك التقني وسأقوم بمساعدتك فوراً."
         )
-        bot.send_message(message.chat.id, res)
-        
     else:
-        bot.send_message(message.chat.id, "Please select an option from the keyboard menu below.")
+        res = (
+            "أهلاً بك! لقد فهمت رسالتك. أنا هنا لمساعدتك في كل ما يتعلق بـ:\n"
+            "- البرمجة وتطوير التطبيقات والبوتات\n"
+            "- الأمن السيبراني وحماية الخوادم\n"
+            "- استعادة وتأمين الحسابات الرقمية\n"
+            "- الإعلانات التسويقية والدعم الفني\n\n"
+            "اكتب لي باختصار ما تحتاج إليه وسأقدم لك التفاصيل الكاملة فوراً!"
+        )
+        
+    bot.send_message(message.chat.id, res)
 
 if __name__ == '__main__':
     bot.infinity_polling()
