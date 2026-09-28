@@ -1,69 +1,71 @@
+import os
 import telebot
-import requests
+from telebot import types
 
-# التوكن الخاص بك
-TOKEN = '8985832742:AAFZd44EbyEUCWrhUS2OXFkrNMOJqflALwY'
+# التوكن الجديد الخاص ببوتك @mehran_coding_bot
+# ملاحظة أمنية: إذا كنت ترفع الكود على جيت هاب عام، يفضل مستقبلاً استخدام os.environ لجلب التوكن
+TOKEN = '8708625165:AAFVHmdMdZe6Tyv8a_cImbsqCkN3VkidkDM'
 bot = telebot.TeleBot(TOKEN)
 
-print("🚀 البوت المطور بالذكاء الاصطناعي بدأ العمل بنجاح...")
-
-# أمر البداية /start مع أزرار القائمة الرئيسية
+# رسالة البداية /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = telebot.types.KeyboardButton('💻 لغات البرمجة')
-    item2 = telebot.types.KeyboardButton('🛡️ الأمن السيبراني')
-    item3 = telebot.types.KeyboardButton('🔐 الهكر الأخلاقي')
-    item4 = telebot.types.KeyboardButton('📞 الأرقام المجانية')
-    item5 = telebot.types.KeyboardButton('🔄 استرجاع الحسابات')
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item1 = types.KeyboardButton('💻 لغات البرمجة')
+    item2 = types.KeyboardButton('🛡️ الأمن السيبراني')
+    item3 = types.KeyboardButton('🔐 الهكر الأخلاقي')
+    item4 = types.KeyboardButton('📞 الأرقام الوهمية )')
+    item5 = types.KeyboardButton('🔄 استرجاع الحسابات)')
+    
     markup.add(item1, item2, item3, item4, item5)
     
-    welcome_text = f"أهلاً بك يا {message.from_user.first_name} في بوت الذكاء الاصطناعي المطور للأمن والبرمجة.\n\n💡 يمكنك استخدام الأزرار بالأسفل، أو كتابة أي سؤال يخطر في بالك مباشرة وسأقوم بالرد عليك فوراً بصفتي ذكاء اصطناعي غير مقيد!"
+    welcome_text = (
+        f"أهلاً بك يا {message.from_user.first_name} في بوت الخدمات التعليمية والأمنية الخاص بـ @mehran_coding_bot.\n"
+        "اختر أحد الأقسام من القائمة أدناه للبدء:"
+    )
     bot.send_message(message.chat.id, welcome_text, reply_markup=markup)
 
-# استقبال ومعالجة جميع الرسائل
+# التعامل مع الأزرار والرسائل النصية
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     text = message.text
-    chat_id = message.chat.id
     
-    # 1. الردود الخاصة بالأزرار الثابتة
     if text == '💻 لغات البرمجة':
-        bot.send_message(chat_id, "📌 **أفضل لغات البرمجة كبداية:**\n1. Python: للأتمتة، البرمجة، والأمن الرقمي.\n2. JavaScript: لتطوير المواقع وفهم ثغرات الويب.")
-    elif text == '🛡️ الأمن السيبراني':
-        bot.send_message(chat_id, "🛡️ **الأمن السيبراني يشمل:**\n- أمن الشبكات والأنظمة والتشفير.\n- التحقيق الجنائي الرقمي والاستجابة للثغرات الأمنية.")
-    elif text == '🔐 الهكر الأخلاقي':
-        bot.send_message(chat_id, "🔐 **قواعد الاختراق الأخلاقي:**\n- اختبار الأنظمة بتصريح رسمي ومسبق فقط.\n- مساعدة أصحاب المواقع في سد الثغرات دون إلحاق أي ضرر.")
-    elif text == '📞 الأرقام المجانية':
-        bot.send_message(chat_id, "⚠️ **تنبيه أمني بخصوص الأرقام:**\nالأرقام المجانية والوهمية المنتشرة عبر التطبيقات غير آمنة لحساباتك الأساسية، حيث يمكن أن تنتقل لملكية مستخدم آخر وتفقد حسابك.")
-    elif text == '🔄 استرجاع الحسابات':
-        bot.send_message(chat_id, "🔄 **طرق التأمين والاسترجاع:**\n1. تواصل دائماً وبشكل مباشر مع الدعم الرسمي للمنصة.\n2. فعّل ميزة التحقق الثنائي (2FA) فوراً على جميع حساباتك لحمايتها من الاختراق.")
-    
-    # 2. إذا كتب المستخدم أي شيء آخر، يتم إرساله للذكاء الاصطناعي المفتوح
-    else:
-        # إرسال رسالة "جاري التفكير..." للمستخدم حتى يأتي الرد
-        thinking_msg = bot.send_message(chat_id, "🤔 جاري التفكير والرد من خلال الذكاء الاصطناعي...")
-        
-        try:
-            # استخدام API خارجي مفتوح للذكاء الاصطناعي (بدون قيود مشددة)
-            api_url = f"https://lolhuman.xyz{requests.utils.quote(text)}"
-            response = requests.get(api_url, timeout=15)
+        bot.send_message(message.chat.id, 
+            "أفضل لغات البدء في البرمجة والأمن السيبراني:\n"
+            "1. Python: ممتازة للاختراق والأتمتة.\n"
+            "2. Bash/Shell: للتحكم بنظام لينكس.\n"
+            "3. JavaScript & HTML: لتطوير الويب وفهم الثغرات (XSS).")
             
-            if response.status_code == 200:
-                result = response.json()
-                ai_response = result.get("result", "عذراً، لم أستطع معالجة الرد حالياً.")
-                
-                # مسح رسالة "جاري التفكير" وإرسال الإجابة الرسمية
-                bot.delete_message(chat_id, thinking_msg.message_id)
-                bot.send_message(chat_id, ai_response)
-            else:
-                bot.edit_message_text("❌ واجهت مشكلة في الاتصال بسيرفر الذكاء الاصطناعي، يرجى المحاولة مجدداً.", chat_id, thinking_msg.message_id)
-                
-        except Exception as e:
-            bot.edit_message_text("⚠️ حدث خطأ أثناء جلب الرد، حاول مرة أخرى.", chat_id, thinking_msg.message_id)
+    elif text == '🛡️ الأمن السيبراني':
+        bot.send_message(message.chat.id, 
+            "ألأمن السيبراني ة:\n"
+            "- أمن الشبكات (Network Security)\n"
+            "- اختبار الفحص والتقييم (Penetration Testing)\n"
+            "- التشفير وتحليل البيانات\n"
+            "- الاستجابة للحوادث الرقمية.")
+            
+    elif text == '🔐 الهكر الأخلاقي':
+        bot.send_message(message.chat.id, 
+            "الهكر الأخلاقي:\n"
+            "- الحصول دائماً على إذن مسبق قبل اختبار أي نظام.\n"
+            "-الإبلاغ عن الثغرات ة (Responsible Disclosure).\n
+            
+    elif text == '📞 الأرقام الوهمية (إرشادات)':
+        bot.send_message(message.chat.id, 
+            "بخصوص الأرقام المجانية أو الوهمية:\n"
+            "الكثير من التطبيقات المجانية توفر أرقاماً، لكنها غالباً غير آمنة وقد تُسحب وتُمنح لشخص آخر.\n"
+            "يُفضل استخدام أرقام حقيقية خاصة لتأمين حساباتك الشخصية وعدم استخدام خدمات مجهولة.")
+            
+    elif text == '🔄 استرجاع الحسابات (نصائح)':
+        bot.send_message(message.chat.id, 
+            "نصائح لاسترجاع وتأمين الحسابات:\n"
+            "1 
+            "2. تفعيل المصادقة الثنائية (2FA) فوراً.\n"
+            "3. استرجاع الحسابات وسرقتها.")
+    else:
+        bot.send_message(message.chat.id, "عذراً، لم أفهم الأمر. استخدم القائمة أو اضغط /start")
 
 # تشغيل البوت باستمرار
-try:
-    bot.infinity_polling(timeout=10, long_polling_timeout=5)
-except Exception as e:
-    print(f"خطأ: {e}")
+print("Bot @mehran_coding_bot is starting...")
+bot.infinity_polling()
