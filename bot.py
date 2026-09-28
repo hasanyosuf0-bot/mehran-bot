@@ -1,71 +1,75 @@
 import os
-import telebot
-from telebot import types
+import logging
+from telegram import Update
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import google.generativeai as genai
 
-# التوكن الجديد الخاص ببوتك @mehran_coding_bot
-# ملاحظة أمنية: إذا كنت ترفع الكود على جيت هاب عام، يفضل مستقبلاً استخدام os.environ لجلب التوكن
-TOKEN = '8708625165:AAFVHmdMdZe6Tyv8a_cImbsqCkN3VkidkDM'
-bot = telebot.TeleBot(TOKEN)
+# إعداد السجلات (Logging)
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
 
-# رسالة البداية /start
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton('💻 لغات البرمجة')
-    item2 = types.KeyboardButton('🛡️ الأمن السيبراني')
-    item3 = types.KeyboardButton('🔐 الهكر الأخلاقي')
-    item4 = types.KeyboardButton('📞 الأرقام الوهمية )')
-    item5 = types.KeyboardButton('🔄 استرجاع الحسابات)')
+# جلب المفاتيح من بيئة العمل
+TELEGRAM_BOT_TOKEN = os.environ.get("BOT_TOKEN")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+
+# إعداد نموذج Gemini مع إيقاف أمان المحتوى لضمان عدم حظر أي إجابات
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
     
-    markup.add(item1, item2, item3, item4, item5)
+    # تعطيل قيود الأمان والمحتوى بالكامل
+    safety_settings = [
+        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+    ]
     
-    welcome_text = (
-        f"أهلاً بك يا {message.from_user.first_name} في بوت الخدمات التعليمية والأمنية الخاص بـ @mehran_coding_bot.\n"
-        "اختر أحد الأقسام من القائمة أدناه للبدء:"
+    model = genai.GenerativeModel(
+        model_name="gemini-1.5-flash",
+        safety_settings=safety_settings
     )
-    bot.send_message(message.chat.id, welcome_text, reply_markup=markup)
+else:
+    model = None
 
-# التعامل مع الأزرار والرسائل النصية
-@bot.message_handler(func=lambda message: True)
-def handle_message(message):
-    text = message.text
-    
-    if text == '💻 لغات البرمجة':
-        bot.send_message(message.chat.id, 
-            "أفضل لغات البدء في البرمجة والأمن السيبراني:\n"
-            "1. Python: ممتازة للاختراق والأتمتة.\n"
-            "2. Bash/Shell: للتحكم بنظام لينكس.\n"
-            "3. JavaScript & HTML: لتطوير الويب وفهم الثغرات (XSS).")
-            
-    elif text == '🛡️ الأمن السيبراني':
-        bot.send_message(message.chat.id, 
-            "ألأمن السيبراني ة:\n"
-            "- أمن الشبكات (Network Security)\n"
-            "- اختبار الفحص والتقييم (Penetration Testing)\n"
-            "- التشفير وتحليل البيانات\n"
-            "- الاستجابة للحوادث الرقمية.")
-            
-    elif text == '🔐 الهكر الأخلاقي':
-        bot.send_message(message.chat.id, 
-            "الهكر الأخلاقي:\n"
-            "- الحصول دائماً على إذن مسبق قبل اختبار أي نظام.\n"
-            "-الإبلاغ عن الثغرات ة (Responsible Disclosure).\n
-            
-    elif text == '📞 الأرقام الوهمية (إرشادات)':
-        bot.send_message(message.chat.id, 
-            "بخصوص الأرقام المجانية أو الوهمية:\n"
-            "الكثير من التطبيقات المجانية توفر أرقاماً، لكنها غالباً غير آمنة وقد تُسحب وتُمنح لشخص آخر.\n"
-            "يُفضل استخدام أرقام حقيقية خاصة لتأمين حساباتك الشخصية وعدم استخدام خدمات مجهولة.")
-            
-    elif text == '🔄 استرجاع الحسابات (نصائح)':
-        bot.send_message(message.chat.id, 
-            "نصائح لاسترجاع وتأمين الحسابات:\n"
-            "1 
-            "2. تفعيل المصادقة الثنائية (2FA) فوراً.\n"
-            "3. استرجاع الحسابات وسرقتها.")
-    else:
-        bot.send_message(message.chat.id, "عذراً، لم أفهم الأمر. استخدم القائمة أو اضغط /start")
+# أمر /start
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    welcome_message = """أهلاً بك! البوت جاهز تماماً للرد على أي استفسار بدون قيود.
+أرسل لي أي شيء وسأجيبك فوراً!"""
+    await update.message.reply_text(welcome_message)
 
-# تشغيل البوت باستمرار
-print("Bot @mehran_coding_bot is starting...")
-bot.infinity_polling()
+# التعامل مع الرسائل النصية
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user_text = update.message.text
+
+    if not model:
+        await update.message.reply_text("عذراً، لم يتم العثور على مفتاح GEMINI_API_KEY.")
+        return
+
+    try:
+        # إرسال النص إلى Gemini للرد
+        response = model.generate_content(user_text)
+        if response.text:
+            await update.message.reply_text(response.text)
+        else:
+            await update.message.reply_text("لم أتمكن من إنتاج رد على هذه الرسالة.")
+    except Exception as e:
+        logging.error(f"Error generating response: {e}")
+        await update.message.reply_text("حدث خطأ أثناء معالجة الطلب، يرجى المحاولة مرة أخرى.")
+
+def main():
+    if not TELEGRAM_BOT_TOKEN:
+        print("خطأ: BOT_TOKEN غير موجود!")
+        return
+
+    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+
+    print("البوت يعمل الآن بنجاح...")
+    application.run_polling()
+
+if __name__ == "__main__":
+    main()
