@@ -78,8 +78,8 @@ def add_telegram_groups(message):
 
 @bot.message_handler(commands=["add_telegram_bots", "إضافة_بوتات_تليجرام"])
 def add_telegram_bots(message):
-    bot.reply_to(message, "أمر إضافة بوتات تليجرام")
-
+  bot.reply_to(message, "أمر إضافة بوتات تليجرام")
+# token updated
 @bot.message_handler(func=lambda message: True)
 def ai_chat(message):
     try:
