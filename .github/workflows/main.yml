@@ -1,14 +1,13 @@
-name: Run Telegram AI Bot
+name: Run Bot
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, رئيسي ]
   workflow_dispatch:
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -20,7 +19,6 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install pyTelegramBotAPI google-generativeai
 
       - name: Run Bot Script
@@ -28,75 +26,4 @@ jobs:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          python -c '
-          import os
-          import telebot
-          import google.generativeai as genai
-
-          TOKEN = os.getenv("BOT_TOKEN")
-          API_KEY = os.getenv("GEMINI_API_KEY")
-
-          bot = telebot.TeleBot(TOKEN)
-          genai.configure(api_key=API_KEY)
-          model = genai.GenerativeModel("gemini-1.5-flash")
-
-          @bot.message_handler(commands=["recover", "استرجاع_حسابات"])
-          def recover_account(message):
-              bot.reply_to(message, "أمر استرجاع الحسابات")
-
-          @bot.message_handler(commands=["social_recovery", "استرجاع_سوشيال"])
-          def social_recovery(message):
-              bot.reply_to(message, "أمر استرجاع حسابات فيسبوك، انستجرام، تيك توك، جوجل")
-
-          @bot.message_handler(commands=["cyber_security", "أمن_سيبراني"])
-          def cyber_security(message):
-              bot.reply_to(message, "أمر الأمن السيبراني")
-
-          @bot.message_handler(commands=["ethical_hacking", "هاكر_أخلاقي"])
-          def ethical_hacking(message):
-              bot.reply_to(message, "أمر الهاكر الأخلاقي")
-
-          @bot.message_handler(commands=["software", "برمجيات"])
-          def software(message):
-              bot.reply_to(message, "أمر البرمجيات")
-
-          @bot.message_handler(commands=["python_code", "أكواد_بايثون"])
-          def python_code(message):
-              bot.reply_to(message, "أمر أكواد بايثون")
-
-          @bot.message_handler(commands=["free_numbers", "أرقام_مجانية"])
-          def free_numbers(message):
-              bot.reply_to(message, "أمر الأرقام المجانية")
-
-          @bot.message_handler(commands=["add_contacts", "إضافة_جهات_اتصال"])
-          def add_contacts(message):
-              file_name = "contacts.vcf"
-              with open(file_name, "w", encoding="utf-8") as f:
-                  for i in range(1, 101):
-                      f.write(f"BEGIN:VCARD\nVERSION:3.0\nFN:جهة_اتصال_{i}\nTEL;TYPE=CELL:+2010000000{i}\nEND:VCARD\n")
-              with open(file_name, "rb") as f:
-                  bot.send_document(message.chat.id, f)
-
-          @bot.message_handler(commands=["add_to_groups", "إضافة_جهات_اتصال_لمجموعات"])
-          def add_to_groups(message):
-              bot.reply_to(message, "أمر إضافة جهات الاتصال لمجموعات واتساب وتليجرام")
-
-          @bot.message_handler(commands=["add_telegram_groups", "إضافة_مجموعات_تليجرام"])
-          def add_telegram_groups(message):
-              bot.reply_to(message, "أمر إضافة مجموعات تليجرام")
-
-          @bot.message_handler(commands=["add_telegram_bots", "إضافة_بوتات_تليجرام"])
-          def add_telegram_bots(message):
-              bot.reply_to(message, "أمر إضافة بوتات تليجرام")
-
-          @bot.message_handler(func=lambda message: True)
-          def ai_chat(message):
-              try:
-                  response = model.generate_content(message.text)
-                  bot.reply_to(message, response.text)
-              except Exception:
-                  pass
-
-          bot.infinity_polling()
-          '
-          
+          python bot.py
