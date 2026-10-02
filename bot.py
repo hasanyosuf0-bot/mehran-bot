@@ -1,89 +1,57 @@
+import logging
 import os
-import telebot
-import google.generativeai as genai
-from google.generativeai import types
+from google import genai
+from telegram import Update
+from telegram.ext import (
+    ApplicationBuilder,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
 
-# جلب توكن البوت ومفتاح جيميناي من متغيرات البيئة
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+logger = logging.getLogger(__name__)
+
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# التحقق من وجود المفاتيح
-if not BOT_TOKEN:
-    raise ValueError("الرجاء تعيين متغير البيئة BOT_TOKEN")
+client = genai.Client(api_key=GEMINI_API_KEY)
 
-if not GEMINI_API_KEY:
-    raise ValueError("الرجاء تعيين متغير البيئة GEMINI_API_KEY")
 
-# إعداد جيميناي
-genai.configure(api_key=GEMINI_API_KEY)
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  user_message = update.message.text
+  logger.info(f"Received message: {user_message}")
 
-# إعدادات السلامة
-safety_settings = [
-    {
-        "category": types.HarmCategory.HARM_CATEGORY_HARASSMENT,
-        "threshold": types.HarmBlockThreshold.BLOCK_NONE,
-    },
-    {
-        "category": types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-        "threshold": types.HarmBlockThreshold.BLOCK_NONE,
-    },
-    {
-        "category": types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-        "threshold": types.HarmBlockThreshold.BLOCK_NONE,
-    },
-    {
-        "category": types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        "threshold": types.HarmBlockThreshold.BLOCK_NONE,
-    },
-]
+  try:
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=user_message,
+    )
 
-generation_config = {
-    "temperature": 0.7,
-}
+    reply_text = response.text
+    await update.message.reply_text(reply_text)
 
-# تحسين صياغة تعليمات النظام باللغة العربية لتكون واضحة للنموذج
-system_instruction = (
-    "أنت مساعد ذكاء اصطناعي شخصي ومبدع محتوى. "
-    "أجب على أسئلة المستخدمين بشكل مباشر، واضح، ودقيق، "
-    "وقدم المعلومات المطلوبة بكل احترافية وموضوعية."
-)
+  except Exception as e:
+    logger.error(f"Error generating content: {e}")
+    await update.message.reply_text(
+        "Sorry, an error occurred while processing your request."
+    )
 
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    generation_config=generation_config,
-    safety_settings=safety_settings,
-    system_instruction=system_instruction
-)
 
-# بدء تشغيل بوت تيليجرام
-bot = telebot.TeleBot(BOT_TOKEN)
+def main():
+  if not TELEGRAM_TOKEN or not GEMINI_API_KEY:
+    logger.error("Please set TELEGRAM_TOKEN and GEMINI_API_KEY environment variables.")
+    return
 
-@bot.message_handler(commands=['start', 'help'])
-def send_welcome(message):
-    bot.reply_to(message, "أهلاً بك! أنا بوت الذكاء الاصطناعي، كيف يمكنني مساعدتك اليوم؟")
+  app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+  app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
 
-@bot.message_handler(func=lambda message: True)
-def handle_message(message):
-    try:
-        # إرسال رسالة انتظار للمستخدم
-        waiting_msg = bot.reply_to(message, "جاري التفكير...")
-        
-        # توليد الرد من نموذج جيميناي
-        response = model.generate_content(message.text)
-        
-        # التأكد من أن الرد يحتوي على نص
-        if response.text:
-            bot.edit_message_text(response.text, chat_id=message.chat.id, message_id=waiting_msg.message_id)
-        else:
-            bot.edit_message_text("عذراً، لم أتمكن من توليد رد مناسب.", chat_id=message.chat.id, message_id=waiting_msg.message_id)
-            
-    except Exception as e:
-        # في حال حدث خطأ، قم بتحديث رسالة الانتظار أو إرسال رسالة جديدة
-        try:
-            bot.edit_message_text(f"حدث خطأ أثناء معالجة طلبك: {str(e)}", chat_id=message.chat.id, message_id=waiting_msg.message_id)
-        except:
-            bot.reply_to(message, f"حدث خطأ أثناء معالجة طلبك: {str(e)}")
+  print("Bot is running...")
+  app.run_polling()
+
 
 if __name__ == "__main__":
-    print("Bot is running...")
-    bot.infinity_polling()
+  main()
